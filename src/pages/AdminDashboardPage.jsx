@@ -25,7 +25,9 @@ function AdminLogin({ onSuccess }) {
   const login = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    if (data.get('username') === DEMO_USER && data.get('password') === DEMO_PASSWORD) {
+    const username = (data.get('username') || '').toString().trim();
+    const password = (data.get('password') || '').toString().trim();
+    if (username === DEMO_USER && password === DEMO_PASSWORD) {
       sessionStorage.setItem(SESSION_KEY, 'active');
       onSuccess();
     } else setError('Incorrect username or password.');
