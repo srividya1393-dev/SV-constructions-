@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Building2, LayoutDashboard, LogIn, LogOut, Menu, Phone, ShieldCheck, User, X } from 'lucide-react';
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Building2, LayoutDashboard, Menu, Phone, ShieldCheck, X } from 'lucide-react';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import { business } from '../data/properties';
-import { useCustomerAuth } from '../context/CustomerAuthContext';
 
 const links = [
   { label: 'Home',                   to: '/' },
@@ -30,15 +29,6 @@ function NavItem({ link, onClick }) {
 
 export default function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isLoggedIn, customer, logoutCustomer } = useCustomerAuth();
-  const navigate = useNavigate();
-
-  function handleLogout() {
-    logoutCustomer();
-    setMobileOpen(false);
-    navigate('/', { replace: true });
-  }
-
   const closeMobile = () => setMobileOpen(false);
 
   return (
@@ -60,42 +50,13 @@ export default function Layout() {
           <div className="hidden items-center gap-2 xl:flex">
             {links.map((link) => <NavItem key={link.to} link={link} />)}
 
-            {isLoggedIn ? (
-              <>
-                {/* customer name chip */}
-                <span className="ml-1 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-600">
-                  <User size={13} className="text-gold" />
-                  {customer.name.split(' ')[0]}
-                </span>
-
-                {/* go to dashboard */}
-                <NavLink
-                  to="/dashboard"
-                  className="inline-flex items-center gap-2 rounded bg-navy px-3 py-2 text-sm font-bold text-white hover:bg-navy-soft"
-                >
-                  <LayoutDashboard size={16} /> Dashboard
-                </NavLink>
-
-                {/* logout */}
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="inline-flex items-center gap-2 rounded border border-slate-300 px-3 py-2 text-sm font-bold text-navy hover:bg-stone"
-                >
-                  <LogOut size={16} /> Sign Out
-                </button>
-              </>
-            ) : (
-              <>
-                {/* customer login */}
-                <NavLink
-                  to="/login"
-                  className="ml-2 inline-flex items-center gap-2 rounded bg-navy px-3 py-2 text-sm font-bold text-white hover:bg-navy-soft"
-                >
-                  <LogIn size={16} /> Customer Login
-                </NavLink>
-              </>
-            )}
+            {/* go to dashboard */}
+            <NavLink
+              to="/dashboard"
+              className="ml-2 inline-flex items-center gap-2 rounded bg-navy px-3 py-2 text-sm font-bold text-white hover:bg-navy-soft"
+            >
+              <LayoutDashboard size={16} /> User Dashboard
+            </NavLink>
 
             {/* admin — always visible */}
             <NavLink
@@ -124,21 +85,7 @@ export default function Layout() {
             <div className="mx-auto flex max-w-7xl flex-col gap-1">
               {links.map((link) => <NavItem key={link.to} link={link} onClick={closeMobile} />)}
 
-              {isLoggedIn ? (
-                <>
-                  <NavItem link={{ label: 'My Dashboard', to: '/dashboard' }} onClick={closeMobile} />
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="mt-1 flex items-center gap-2 rounded px-2 py-2 text-sm font-bold text-slate-700 hover:text-navy"
-                  >
-                    <LogOut size={15} /> Sign Out ({customer.name.split(' ')[0]})
-                  </button>
-                </>
-              ) : (
-                <NavItem link={{ label: 'Customer Login', to: '/login' }} onClick={closeMobile} />
-              )}
-
+              <NavItem link={{ label: 'User Dashboard', to: '/dashboard' }} onClick={closeMobile} />
               <NavItem link={{ label: 'Admin Dashboard', to: '/admin' }} onClick={closeMobile} />
 
               <a

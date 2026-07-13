@@ -1,12 +1,20 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { completedProjects as seedPrevious, properties as seedCurrent } from '../data/properties';
 
-const STORAGE_KEY = 'sri-vidya-property-data-v1';
 const PropertyContext = createContext(null);
 
-function readStoredData() {
+function readStoredCurrent() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem('projectImages');
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+}
+
+function readStoredPrevious() {
+  try {
+    const saved = localStorage.getItem('previousProjects');
     return saved ? JSON.parse(saved) : null;
   } catch {
     return null;
@@ -14,22 +22,35 @@ function readStoredData() {
 }
 
 export function PropertyProvider({ children }) {
-  const stored = readStoredData();
-  const [currentProperties, setCurrentProperties] = useState(stored?.current || seedCurrent);
-  const [previousBuildings, setPreviousBuildings] = useState(stored?.previous || seedPrevious);
+  const [currentProperties, setCurrentProperties] = useState(() => {
+    const stored = readStoredCurrent();
+    return stored && stored.length > 0 ? stored : seedCurrent;
+  });
+
+  const [previousBuildings, setPreviousBuildings] = useState(() => {
+    const stored = readStoredPrevious();
+    return stored && stored.length > 0 ? stored : seedPrevious;
+  });
+
   const [storageError, setStorageError] = useState('');
 
   useEffect(() => {
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ current: currentProperties, previous: previousBuildings }),
-      );
+      localStorage.setItem('projectImages', JSON.stringify(currentProperties));
       setStorageError('');
     } catch {
-      setStorageError('Browser storage is full. Remove a few large images or connect cloud storage before refreshing.');
+      setStorageError('Browser storage is full. Remove a few large images before refreshing.');
     }
-  }, [currentProperties, previousBuildings]);
+  }, [currentProperties]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('previousProjects', JSON.stringify(previousBuildings));
+      setStorageError('');
+    } catch {
+      setStorageError('Browser storage is full. Remove a few large images before refreshing.');
+    }
+  }, [previousBuildings]);
 
   const actions = useMemo(() => ({
     saveItem(section, item) {

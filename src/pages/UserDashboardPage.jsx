@@ -1,19 +1,15 @@
-import { Building2, CheckCircle2, Clock3, Home, LogOut, MessageCircle, User } from 'lucide-react';
+import { Building2, CheckCircle2, Clock3, Home, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import EmptyState from '../components/EmptyState';
 import PreviousConstructionCard from '../components/PreviousConstructionCard';
 import PropertyCard from '../components/PropertyCard';
 import { business } from '../data/properties';
-import { useCustomerAuth } from '../context/CustomerAuthContext';
 import { useProperties } from '../context/PropertyContext';
 import { CalendarDays, ChevronLeft, ChevronRight, Images, MapPin, X } from 'lucide-react';
 
 export default function UserDashboardPage() {
   const { currentProperties, previousBuildings } = useProperties();
-  const { customer, logoutCustomer } = useCustomerAuth();
-  const navigate = useNavigate();
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeImage, setActiveImage] = useState(0);
 
@@ -23,11 +19,6 @@ export default function UserDashboardPage() {
     document.body.style.overflow = selectedProject ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [selectedProject]);
-
-  function handleLogout() {
-    logoutCustomer();
-    navigate('/', { replace: true });
-  }
 
   const openGallery = (project) => {
     setSelectedProject(project);
@@ -44,12 +35,6 @@ export default function UserDashboardPage() {
 
             <div className="mt-2 flex flex-col justify-between gap-5 md:flex-row md:items-end">
               <div>
-                {customer && (
-                  <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-600">
-                    <User size={13} className="text-gold" />
-                    Signed in as <strong>{customer.name}</strong>
-                  </div>
-                )}
                 <h1 className="text-3xl font-black text-navy sm:text-4xl">Find your next property.</h1>
                 <p className="mt-2 text-slate-600">View live listings, completed work, and contact our team directly.</p>
               </div>
@@ -63,14 +48,6 @@ export default function UserDashboardPage() {
                 >
                   <MessageCircle size={18} /> WhatsApp {business.phone}
                 </a>
-                <button
-                  id="customer-logout-btn"
-                  type="button"
-                  onClick={handleLogout}
-                  className="inline-flex items-center gap-2 rounded border border-slate-300 bg-white px-5 py-3 text-sm font-black text-navy hover:bg-slate-50"
-                >
-                  <LogOut size={16} /> Sign Out
-                </button>
               </div>
             </div>
           </div>

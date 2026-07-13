@@ -1,13 +1,10 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
-import CustomerProtectedRoute from './components/CustomerProtectedRoute';
-import { CustomerAuthProvider } from './context/CustomerAuthContext';
 import { PropertyProvider } from './context/PropertyContext';
 import AboutPage from './pages/AboutPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import ContactPage from './pages/ContactPage';
-import CustomerLoginPage from './pages/CustomerLoginPage';
 import HomePage from './pages/HomePage';
 import PreviousBuildingsPage from './pages/PreviousBuildingsPage';
 import PropertiesPage from './pages/PropertiesPage';
@@ -35,39 +32,27 @@ function NotFoundPage() {
 export default function App() {
   return (
     <BrowserRouter>
-      <CustomerAuthProvider>
-        <PropertyProvider>
-          <ScrollToTop />
-          <Routes>
-            <Route element={<Layout />}>
-              <Route index element={<HomePage />} />
-              <Route path="about" element={<AboutPage />} />
-              <Route path="properties" element={<PropertiesPage />} />
-              <Route path="properties/:id" element={<PropertyDetailsPage />} />
-              <Route path="previous-buildings" element={<PreviousBuildingsPage />} />
-              <Route path="contact" element={<ContactPage />} />
+      <PropertyProvider>
+        <ScrollToTop />
+        <Routes>
+          <Route element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="properties" element={<PropertiesPage />} />
+            <Route path="properties/:id" element={<PropertyDetailsPage />} />
+            <Route path="previous-buildings" element={<PreviousBuildingsPage />} />
+            <Route path="contact" element={<ContactPage />} />
 
-              {/* ── Customer login (public) ── */}
-              <Route path="login" element={<CustomerLoginPage />} />
+            {/* ── User dashboard (public) ── */}
+            <Route path="dashboard" element={<UserDashboardPage />} />
 
-              {/* ── User dashboard (protected: customers only) ── */}
-              <Route
-                path="dashboard"
-                element={
-                  <CustomerProtectedRoute>
-                    <UserDashboardPage />
-                  </CustomerProtectedRoute>
-                }
-              />
+            {/* ── Admin (has its own internal login guard) ── */}
+            <Route path="admin" element={<AdminDashboardPage />} />
 
-              {/* ── Admin (has its own internal login guard) ── */}
-              <Route path="admin" element={<AdminDashboardPage />} />
-
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
-          </Routes>
-        </PropertyProvider>
-      </CustomerAuthProvider>
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </PropertyProvider>
     </BrowserRouter>
   );
 }
